@@ -3,16 +3,17 @@ const puppeteer = require("puppeteer");
 let { answer } = require("./codes");
 let curTab;
 
-let browserOpenPromise = puppeteer.launch({ // creates browser instance and returns the promise
+let browserOpenPromise = puppeteer.launch({
+  // creates browser instance and returns the promise
   headless: false, // if headless is TRUE it means bina chrome open huve meri testing hojaye
-  defaultViewport: null, // Default Port 
+  defaultViewport: null, // Default Port
   args: ["--start-maximized"], // Arguments
   executablePath: "C:/Program Files/Google/Chrome/Application/chrome",
 });
 // console.log(browserOpenPromise);
 browserOpenPromise //fulfill
   .then(function (browser) {
-    // parameter is given by parent 
+    // parameter is given by parent
     // insted of browser we can write hatti also
     // we get browser from launch
     // console.log(browserOpenPromise);
@@ -21,7 +22,7 @@ browserOpenPromise //fulfill
     return allTabsPromise; // it will return object
   })
   .then(function (allTabsArr) {
-    curTab = allTabsArr[0]; // browser ka first tab ,  curTab is global variable . 
+    curTab = allTabsArr[0]; // browser ka first tab ,  curTab is global variable .
     console.log("new tab");
     let visitingLoginPagePromise = curTab.goto(
       "https://www.hackerrank.com/auth/login"
@@ -30,6 +31,7 @@ browserOpenPromise //fulfill
   })
   .then(function () {
     console.log("Hackerrank login page opened");
+    // type(Selector[where to type] ,Data[what to type])
     let emailWillBeTypedPromise = curTab.type("input[name='username']", Email, {
       delay: 100,
     });
@@ -53,15 +55,17 @@ browserOpenPromise //fulfill
   })
   .then(function () {
     console.log("logged into hackerrank successfully");
-    // waitAndClick will wait for entire selector to load , and then it will click on the node
+    // waitAndClick will wait for entire selector to load , and then it will click on the node/button
     // these algorithmTabWillBeOpenedPromise is waiting for promise
     let algorithmTabWillBeOpenedPromise = waitAndClick(
+      // My function
       "div[data-automation='algorithms']"
     );
     return algorithmTabWillBeOpenedPromise;
   })
   .then(function () {
     console.log("algorithm pages is open");
+    // Wait for selector will wait for entire page to load , and then will find the needed node .
     let allQuesPromise = curTab.waitForSelector(
       'a[data-analytics="ChallengeListChallengeName"]'
     );
@@ -69,6 +73,7 @@ browserOpenPromise //fulfill
   })
   .then(function () {
     function getAllQuesLinks() {
+      
       let allElemArr = document.querySelectorAll(
         'a[data-analytics="ChallengeListChallengeName"]'
       );
@@ -78,7 +83,7 @@ browserOpenPromise //fulfill
       }
       return linksArr;
     }
-    let linksArrPromise = curTab.evaluate(getAllQuesLinks);
+    let linksArrPromise = curTab.evaluate(getAllQuesLinks); // evaluate function help use to run js function inside puppeteer
     return linksArrPromise;
   })
   .then(function (linksArr) {
@@ -102,22 +107,24 @@ browserOpenPromise //fulfill
   });
 
 function waitAndClick(selector) {
+  // We've to return promise , so making new promise .
   let waitClickPromise = new Promise(function (resolve, reject) {
     let waitForSelectorPromise = curTab.waitForSelector(selector);
     waitForSelectorPromise
       .then(function () {
+        console.log("Algo btn is found");
         let clickPromise = curTab.click(selector);
         return clickPromise;
       })
       .then(function () {
-        console.log("Quetion btn is clicked");
-        resolve();
+        console.log("Algo btn is clicked");
+        resolve(); // Now both the operation are finished , As the promise is been resolved then we'll return the resolve promise to waitForSelectorPromise .
       })
       .catch(function (err) {
         reject(err);
       });
   });
-  return waitClickPromise;
+  return waitClickPromise; // Promise is return to the element which has called the waitAndClick function .
 }
 
 function questionSolver(url, idx) {
