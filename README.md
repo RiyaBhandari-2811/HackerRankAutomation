@@ -18,4 +18,6 @@
 - Npm Package :[ Puppeteer](https://www.npmjs.com/package/puppeteer "Visit")
 - JS - Promises
 
-## 📽 Demo Video
+## 📽 Demo Video 
+
+<video width="700" height="600" controls> <source src = "./HackerrankAutomationDemo.mp4" type="video/mp4"></video>
